@@ -1,0 +1,7 @@
+# Django 
+*.log
+*.pyc
+db.sqlite3
+
+# Environments 
+.env 
