@@ -17,7 +17,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
             # Set access and refresh cookies
             # TODO: set secure=True in production
-            response.set_cookie('access', access_token, httponly=True, secure=False, samesite='None', max_age=timedelta(minutes=2))
+            response.set_cookie('access', access_token, httponly=True, secure=False, samesite='None', max_age=timedelta(minutes=5))
             response.set_cookie('refresh', refresh_token, httponly=True, secure=False, samesite='None', max_age=timedelta(days=1))
             response.data = {}
             
