@@ -20,3 +20,11 @@ class Exercises(models.Model):
 
     def __str__(self):
         return self.value
+
+class Workouts(models.Model):
+    name = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False, related_name="workouts")
+
+    def __str__(self):
+        return f"Template: {self.name} by {self.user}"
+    

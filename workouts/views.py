@@ -4,7 +4,7 @@ from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 
-from .serializers import ExercisesSerializer
+from .serializers import ExercisesSerializer, WorkoutsSerializer
 from .models import Exercises
 
 User = get_user_model()
@@ -24,5 +24,24 @@ class ExercisesList(APIView):
     def get(self, request):
         exercises = Exercises.objects.filter(Q(user=request.user) | Q(user__isnull=True))
         serializer = ExercisesSerializer(exercises, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class WorkoutsList(APIView):
+    def post(self, request):
+        new_workout = request.data
+        new_workout["user"] = request.user.id
+
+        serializer = WorkoutsSerializer(data=new_workout)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request):
+        workouts = request.user.workouts
+        serializer = WorkoutsSerializer(workouts, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
