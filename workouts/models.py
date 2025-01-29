@@ -44,9 +44,11 @@ class BlockExercise(models.Model):
         return f"{self.exercise.value} in Block {self.block.position}, position {self.position}"
     
 class BlockExerciseData(models.Model):
+    FIELD_CHOICES = [('sets', 'Sets'), ('reps', 'Repetitions'), ('duration', 'Duration')]
+
     block_exercise = models.ForeignKey(BlockExercise, on_delete=models.CASCADE, related_name="data")
-    field = models.CharField(max_length=20)
-    value = models.IntegerField() # This will actually be either Integer or duration
+    field = models.CharField(choices=FIELD_CHOICES, max_length=20)
+    value = models.PositiveIntegerField()
 
     def __str__(self):
         return f"{self.field}: {self.value} for {self.block_exercise.exercise.value}"
