@@ -13,6 +13,7 @@ class Exercise(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
 
     class Meta:
+        ordering = ["value"]
         constraints = [
             models.UniqueConstraint(fields=["value", "user"], condition=Q(user__isnull=False), name="unique_user_generated_exercise"),
             models.UniqueConstraint(fields=["value"], condition=Q(user__isnull=True), name="unique_default_exercise")
