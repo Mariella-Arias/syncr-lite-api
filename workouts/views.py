@@ -94,6 +94,7 @@ class WorkoutsList(APIView):
                 result = {
                     "id" : workout_id,
                     "name": workout.name,
+                    "created_at": workout.created_at,
                     "blocks": [{
                         "exercises": [{
                             "exercise": block_exercise.exercise.id,
