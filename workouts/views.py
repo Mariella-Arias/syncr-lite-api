@@ -4,7 +4,6 @@ from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from rest_framework.exceptions import NotFound, PermissionDenied
-from datetime import datetime
 
 from .serializers import ExerciseSerializer, WorkoutSerializer, BlockSerializer, BlockExerciseSerializer, BlockExerciseDataSerializer, ActivitySerializer
 from .models import Exercise, Workout, Activity

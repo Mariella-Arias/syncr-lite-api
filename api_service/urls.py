@@ -14,12 +14,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, include
 
-from .views import CustomTokenObtainPairView, CustomTokenRefreshView
+from .views import CustomTokenObtainPairView, CustomTokenRefreshView, CustomTokenBlacklistView
 
 urlpatterns = [
+    path('api/token/blacklist/', CustomTokenBlacklistView.as_view()),
     path('auth/token/refresh/', CustomTokenRefreshView.as_view()),
     path('auth/token/', CustomTokenObtainPairView.as_view()),
     path('auth/', include('djoser.urls')),

@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'accounts',
     'rest_framework',
     'djoser',
-    'workouts'
+    'workouts',
+    'rest_framework_simplejwt.token_blacklist'
 ]
 
 MIDDLEWARE = [
@@ -143,12 +144,12 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'accounts.authentication.CustomJWTAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ), 
-}
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'accounts.authentication.CustomJWTAuthentication',
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ), 
+# }
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -163,6 +164,8 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('JWT',),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True
 }
 
 DJOSER = {
