@@ -10,7 +10,7 @@ class Exercise(models.Model):
     label = models.CharField(max_length=50)
     value = models.CharField(max_length=50)
     tracking_param = models.CharField(choices=PARAM_CHOICES, default="reps")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, default=None)
 
     class Meta:
         ordering = ["value"]
@@ -57,3 +57,12 @@ class BlockExerciseData(models.Model):
 
     def __str__(self):
         return f"{self.field}: {self.value} for {self.block_exercise.exercise.value}"
+
+class Activity(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, related_name="fitness_activity")
+    workout = models.ForeignKey(Workout, on_delete=models.CASCADE)
+    date_scheduled = models.DateField(null=False)
+    completed = models.BooleanField(null=True)
+
+    def __str__(self):
+        return f"Workout {self.workout.name} scheduled on {self.date_scheduled}"
