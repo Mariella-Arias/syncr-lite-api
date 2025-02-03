@@ -28,18 +28,27 @@ class ExercisesList(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    def delete(self, request, exercise_id=None):
+    def delete(self, request, exercise_id=None): 
         try:
             target_exercise = Exercise.objects.get(id=exercise_id)
+
+            if target_exercise.user != request.user and not request.user.is_staff:
+                raise PermissionDenied({"detail": "You do not have permission to delete this exercise."})
+                
+            block_exercises = target_exercise.block_exercises.all()
+            for block_exercise in block_exercises:
+                block = block_exercise.block
+
+                # Deletes workout and associated blocks
+                block.workout.delete()
+
+            # Deletes exercise and associated block_exercises
+            target_exercise.delete()
+            
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+        
         except Exercise.DoesNotExist:
             raise NotFound({"detail": "Exercise not found."})
-        
-        if target_exercise.user != request.user:
-            raise PermissionDenied({"detail": "You do not have permission to delete this exercise."})
-    
-        target_exercise.delete()
-        return Response({}, status=status.HTTP_204_NO_CONTENT)
-
     
 class WorkoutsList(APIView):
     def post(self, request):

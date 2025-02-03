@@ -42,7 +42,7 @@ class Block(models.Model):
     
 class BlockExercise(models.Model):
     block = models.ForeignKey(Block, on_delete=models.CASCADE, related_name="exercises")
-    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE, related_name="block_exercises")
     position = models.IntegerField(null=False)
 
     def __str__(self):
