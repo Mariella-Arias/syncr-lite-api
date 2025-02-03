@@ -45,7 +45,7 @@ class CustomTokenRefreshView(TokenRefreshView):
             new_refresh = RefreshToken.for_user(User.objects.get(pk=user))
             new_access = new_refresh.access_token
 
-            response = Response({"access": str(new_access), "refresh": str(new_refresh)}, status=status.HTTP_200_OK)
+            response = Response(status=status.HTTP_200_OK)
 
             response.set_cookie("refresh", str(new_refresh),  httponly=True, secure=False, samesite='None', max_age=timedelta(days=1))
             response.set_cookie("access", str(new_access),  httponly=True, secure=False, samesite='None', max_age=timedelta(minutes=5))
