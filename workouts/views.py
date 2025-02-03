@@ -44,7 +44,7 @@ class ExercisesList(APIView):
 
             # Deletes exercise and associated block_exercises
             target_exercise.delete()
-            
+
             return Response({}, status=status.HTTP_204_NO_CONTENT)
         
         except Exercise.DoesNotExist:
@@ -140,7 +140,7 @@ class WorkoutsList(APIView):
         except Workout.DoesNotExist:
             raise NotFound({"detail": "Workout not found."})
         
-        if target_workout.user != request.user:
+        if target_workout.user != request.user and not request.user.is_staff:
             raise PermissionDenied({"detail": "You do not have permission to delete this workout."})
     
         target_workout.delete()
@@ -244,7 +244,7 @@ class ActivityView(APIView):
         except Activity.DoesNotExist:
             raise NotFound({"detail": "Activity entry not found."})
         
-        if target.user != request.user:
+        if target.user != request.user and not request.user.is_staff:
             raise PermissionDenied({"detail": "You do not have permission to delete this entry."})
     
         target.delete()
