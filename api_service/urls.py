@@ -20,8 +20,8 @@ from .views import CustomTokenObtainPairView, CustomTokenRefreshView, CustomToke
 
 urlpatterns = [
     path('api/token/blacklist/', CustomTokenBlacklistView.as_view()),
-    path('auth/token/refresh/', CustomTokenRefreshView.as_view()),
-    path('auth/token/', CustomTokenObtainPairView.as_view()),
+    path('token/refresh/', CustomTokenRefreshView.as_view()),
+    path('token/', CustomTokenObtainPairView.as_view()),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('workouts/', include('workouts.urls'))
