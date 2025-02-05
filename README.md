@@ -46,8 +46,8 @@ Key Libraries:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/fitness-tracker-api.git
-cd fitness-tracker-api
+git clone https://github.com/Mariella-Arias/syncr-lite-api.git
+cd syncr-lite-api
 ```
 
 ### 2. Create Virtual Environment
@@ -67,7 +67,7 @@ pip install -r requirements.txt
 
 ```bash
 # Create PostgreSQL database
-createdb fitness_tracker_db
+createdb syncr_lite_db
 
 # Configure database settings in settings.py
 ```
@@ -98,7 +98,6 @@ Create a `.env` file with the following:
 ```
 SECRET_KEY=your_secret_key
 DEBUG=False
-DATABASE_URL=postgres://username:password@localhost/fitness_tracker_db
 ```
 
 ## API Endpoints
