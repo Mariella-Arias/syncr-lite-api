@@ -38,7 +38,7 @@ class ActivitySerializer(ModelSerializer):
         model = Activity
         fields = '__all__'
    
-    def validate(self, data):
-        if 'user' in data:
-            raise ValidationError({"user": "You cannot modify the user field."})
-        return data
+    def update(self, instance, validated_data):
+        validated_data.pop("user", None)
+      
+        return super().update(instance, validated_data)
