@@ -14,9 +14,19 @@ class ExerciseSerializer(ModelSerializer):
         return obj.user is not None
     
 class WorkoutSerializer(ModelSerializer):
+    exercise_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Workout
-        fields = '__all__'
+        fields = '__all__'  
+
+    def get_exercise_count(self, obj):
+        count = 0
+        blocks = obj.blocks.all()
+        for block in blocks:
+            count += block.exercises.count()
+        return count
+
 
 class BlockSerializer(ModelSerializer):
     class Meta:
