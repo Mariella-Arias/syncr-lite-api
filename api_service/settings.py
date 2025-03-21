@@ -24,8 +24,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+def read_secret(secret_file_path):
+    try:
+        with open(secret_file_path, 'r') as file:
+            return file.read().strip()
+    except Exception as e:
+        print(f"Error reading secret file {secret_file_path}: {e}")
+        return ''
+    
+SECRET_KEY_FILE = os.environ.get('SECRET_KEY_FILE')
+
+if SECRET_KEY_FILE and os.path.exists(SECRET_KEY_FILE):
+    SECRET_KEY = read_secret(SECRET_KEY_FILE)
+else:
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-secret-key-for-development')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -86,14 +99,14 @@ WSGI_APPLICATION = 'api_service.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
+DB_PASSWORD_FILE = os.environ.get('DB_PASSWORD_FILE')
+DB_PASSWORD = read_secret(DB_PASSWORD_FILE) if DB_PASSWORD_FILE and os.path.exists(DB_PASSWORD_FILE) else os.environ.get('DB_PASSWORD', '')
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv('DB_NAME'),
         "USER": os.getenv('DB_USER'),
-        "PASSWORD": os.getenv('DB_PASSWORD'),
+        "PASSWORD": DB_PASSWORD,
         "HOST": os.getenv('DB_HOST'),
         "PORT": os.getenv('DB_PORT'),
     }
@@ -120,11 +133,12 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = "accounts.UserAccount"
 
 #Email
+EMAIL_HOST_PASSWORD_FILE = os.environ.get('EMAIL_HOST_PASSWORD_FILE')
+EMAIL_HOST_PASSWORD = read_secret(EMAIL_HOST_PASSWORD_FILE) if EMAIL_HOST_PASSWORD_FILE and os.path.exists(EMAIL_HOST_PASSWORD_FILE) else os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 
 # Internationalization

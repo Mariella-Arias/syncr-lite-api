@@ -5,3 +5,10 @@ db.sqlite3
 
 # Environments 
 .env 
+
+# Secret files
+db/password.txt
+server/secretkey.txt
+email/password.txt
+**/password.txt
+**/secretkey.txt
