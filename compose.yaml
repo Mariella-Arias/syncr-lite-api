@@ -33,10 +33,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+        restart: true
     secrets:
       - secret-key
       - db-password
       - email-password
+    develop:
+      watch:
+        - action: rebuild
+          path: .
 
   db:
     image: postgres
