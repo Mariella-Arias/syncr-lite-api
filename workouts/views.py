@@ -251,10 +251,17 @@ class ActivityView(APIView):
         return Response({}, status=status.HTTP_204_NO_CONTENT)
     
     def get(self, request):
-        try:
-            activity = request.user.fitness_activity.order_by("-date_scheduled")
-            serializer = ActivitySerializer(activity, many=True)
+        start_date = request.query_params.get('start_date', None)
+        end_date = request.query_params.get('end_date', None)
+        print('Start date', start_date)
+        print('End date', end_date)
+        activities = request.user.fitness_activity.order_by("-date_scheduled")
 
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Activity.DoesNotExist:
-            return Response({"details": "No activity found for this user."})
+        if start_date:
+            activities = activities.filter(date_scheduled__gte=start_date)
+        if end_date:
+            activities = activities.filter(date_scheduled__lte=end_date)
+        
+        serializer = ActivitySerializer(activities, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
