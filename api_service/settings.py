@@ -41,10 +41,9 @@ else:
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'syncr.onrender.com').split(',')
 
 # Application definition
 
@@ -132,7 +131,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "accounts.UserAccount"
 
-#Email
+# Email
 EMAIL_HOST_PASSWORD_FILE = os.environ.get('EMAIL_HOST_PASSWORD_FILE')
 EMAIL_HOST_PASSWORD = read_secret(EMAIL_HOST_PASSWORD_FILE) if EMAIL_HOST_PASSWORD_FILE and os.path.exists(EMAIL_HOST_PASSWORD_FILE) else os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
