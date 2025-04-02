@@ -101,18 +101,33 @@ WSGI_APPLICATION = 'api_service.wsgi.application'
 
 
 # Database
-DB_PASSWORD_FILE = os.environ.get('DB_PASSWORD_FILE')
-DB_PASSWORD = read_secret(DB_PASSWORD_FILE) if DB_PASSWORD_FILE and os.path.exists(DB_PASSWORD_FILE) else os.environ.get('DB_PASSWORD', '')
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv('DB_NAME'),
-        "USER": os.getenv('DB_USER'),
-        "PASSWORD": DB_PASSWORD,
-        "HOST": os.getenv('DB_HOST'),
-        "PORT": os.getenv('DB_PORT'),
+
+if os.environ.get('GITHUB_ACTIONS'):
+     DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'postgres',
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
     }
-}
+else:
+    DB_PASSWORD_FILE = os.environ.get('DB_PASSWORD_FILE')
+    DB_PASSWORD = read_secret(DB_PASSWORD_FILE) if DB_PASSWORD_FILE and os.path.exists(DB_PASSWORD_FILE) else os.environ.get('DB_PASSWORD', '')
+
+
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv('DB_NAME'),
+            "USER": os.getenv('DB_USER'),
+            "PASSWORD": DB_PASSWORD,
+            "HOST": os.getenv('DB_HOST'),
+            "PORT": os.getenv('DB_PORT'),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
