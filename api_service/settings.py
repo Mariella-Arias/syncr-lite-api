@@ -78,6 +78,9 @@ CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'api_service.urls'
 
+# Dir to collect static files
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
