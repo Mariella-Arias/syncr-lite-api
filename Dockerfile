@@ -37,9 +37,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 # Copy the entire project
 COPY . .
 
-# Run database migrations
-RUN python manage.py migrate
-
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
