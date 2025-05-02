@@ -30,6 +30,7 @@ services:
       - EMAIL_PORT=587
       - EMAIL_HOST_USER=syncr.auth@gmail.com
       - EMAIL_HOST_PASSWORD_FILE=/run/secrets/email-password
+      - FRONTEND_DOMAIN=mariella-arias.github.io/syncr-lite-ui
     depends_on:
       db:
         condition: service_healthy

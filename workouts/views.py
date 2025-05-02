@@ -4,7 +4,8 @@ from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from rest_framework.exceptions import NotFound, PermissionDenied
-from datetime import date
+from django.utils import timezone
+from zoneinfo import ZoneInfo
 
 from .serializers import ExerciseSerializer, WorkoutSerializer, BlockSerializer, BlockExerciseSerializer, BlockExerciseDataSerializer, ActivitySerializer
 from .models import Exercise, Workout, Activity
@@ -209,7 +210,6 @@ class WorkoutsList(APIView):
 
         return Response(workout_serializer.data, status=status.HTTP_202_ACCEPTED)
     
-
 class ActivityView(APIView):
     def post(self, request):
         activity_entry = request.data
@@ -252,16 +252,19 @@ class ActivityView(APIView):
         return Response({}, status=status.HTTP_204_NO_CONTENT)
 
     def get(self, request):
+
         # types: "all" (default) | "recent" | "period" 
         query_type = request.query_params.get('type', 'all')
   
         activities = request.user.fitness_activity.order_by("-date_scheduled")
         
         if query_type == 'recent':
-            today = date.today()
-            # activities = activities[:3]
-            activities = activities.filter(date_scheduled__lte=today)[:3]
-            
+            utc_now = timezone.now()
+            local_now = utc_now.astimezone(ZoneInfo('America/Chicago'))
+            today = local_now.date()
+        
+            activities = activities.filter(date_scheduled__lt=today)[:5]
+           
         elif query_type == 'period':
             start_date = request.query_params.get('start_date', None)
             end_date = request.query_params.get('end_date', None)

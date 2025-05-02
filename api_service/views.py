@@ -8,6 +8,8 @@ from rest_framework import status
 from datetime import timedelta
 from django.contrib.auth import get_user_model
 
+
+
 User = get_user_model()
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -50,6 +52,7 @@ class CustomTokenRefreshView(TokenRefreshView):
             # ! secure=True in production
             response.set_cookie("refresh", str(new_refresh),  httponly=True, secure=True, samesite='Lax', max_age=timedelta(days=1))
             response.set_cookie("access", str(new_access),  httponly=True, secure=True, samesite='Lax', max_age=timedelta(minutes=5))
+
             return response
     
         except Exception as e:
