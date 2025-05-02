@@ -37,13 +37,18 @@ SECRET_KEY_FILE = os.environ.get('SECRET_KEY_FILE')
 if SECRET_KEY_FILE and os.path.exists(SECRET_KEY_FILE):
     SECRET_KEY = read_secret(SECRET_KEY_FILE)
 else:
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-secret-key-for-development')
+    SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# PROD
 DEBUG = os.environ.get('DEBUG', 'False') == 'False'
-
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'syncr-lite-api.onrender.com').split(',')
+
+# LOCAL DEV
+# DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'localhost:8000']
+
 
 # Application definition
 
@@ -73,7 +78,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
+CORS_ALLOWED_ORIGINS = ['http://localhost:5173',  'https://mariella-arias.github.io']
 CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'api_service.urls'
@@ -82,7 +87,7 @@ ROOT_URLCONF = 'api_service.urls'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 TEMPLATES = [
-    {
+    { 
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
         'APP_DIRS': True,
@@ -210,5 +215,5 @@ DJOSER = {
         'password_changed_confirmation': 'accounts.email.CustomPasswordChangedConfirmationEmail',
         'username_changed_confirmation': 'accounts.email.CustomUsernameChangedConfirmationEmail',
         'username_reset': 'accounts.email.CustomUsernameResetEmail',
-    }
+    },
 }
