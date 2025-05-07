@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from datetime import timedelta
 from django.contrib.auth import get_user_model
-
+from django.conf import settings
 
 
 User = get_user_model()
@@ -20,14 +20,16 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             access_token = response.data.get('access')
             refresh_token = response.data.get('refresh')
 
+            secure_cookie = settings.ENVIRONMENT == 'production'
+            samesite = 'None' if settings.ENVIRONMENT == 'production' else 'Lax'
+
             # Set access and refresh cookies
-            # ! secure=True in production
-            response.set_cookie('access', access_token, httponly=True, secure=True, samesite='Lax', max_age=timedelta(minutes=5))
-            response.set_cookie('refresh', refresh_token, httponly=True, secure=True, samesite='Lax', max_age=timedelta(days=1))
+            response.set_cookie('access', access_token, httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(minutes=5))
+            response.set_cookie('refresh', refresh_token, httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(days=1))
             response.data = {}
             
             return response
-        except:
+        except Exception as e:
            return Response({"detail" : "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
 
 class CustomTokenRefreshView(TokenRefreshView):
@@ -43,15 +45,17 @@ class CustomTokenRefreshView(TokenRefreshView):
             old_refresh.blacklist()
            
             user = old_refresh.payload['user_id']
-    
+
             new_refresh = RefreshToken.for_user(User.objects.get(pk=user))
             new_access = new_refresh.access_token
 
             response = Response(status=status.HTTP_200_OK)
 
-            # ! secure=True in production
-            response.set_cookie("refresh", str(new_refresh),  httponly=True, secure=True, samesite='Lax', max_age=timedelta(days=1))
-            response.set_cookie("access", str(new_access),  httponly=True, secure=True, samesite='Lax', max_age=timedelta(minutes=5))
+            secure_cookie = settings.ENVIRONMENT == 'production'
+            samesite = 'None' if settings.ENVIRONMENT == 'production' else 'Lax'
+    
+            response.set_cookie("refresh", str(new_refresh),  httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(days=1))
+            response.set_cookie("access", str(new_access),  httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(minutes=5))
 
             return response
     
@@ -84,3 +88,4 @@ class CustomTokenBlacklistView(TokenBlacklistView):
 
         except:
             return Response({"detail" : "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+   

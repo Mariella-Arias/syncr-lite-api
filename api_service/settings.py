@@ -20,6 +20,7 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ENVIRONMENT = os.environ.get('ENVIRONMENT', 'development')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -40,15 +41,8 @@ else:
     SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
 
-# SECURITY WARNING: don't run with debug turned on in production!
-# PROD
-DEBUG = os.environ.get('DEBUG', 'False') == 'False'
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'syncr-lite-api.onrender.com').split(',')
-
-# LOCAL DEV
-# DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-# ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'localhost:8000']
-
+DEBUG = os.environ.get('DEBUG', 'True' if ENVIRONMENT == 'development' else 'False') == 'True'
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,localhost:8000').split(',')
 
 # Application definition
 
@@ -78,8 +72,25 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = ['http://localhost:5173',  'https://mariella-arias.github.io']
+CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:5173').split(',')
 CORS_ALLOW_CREDENTIALS = True
+
+# Production security settings
+if ENVIRONMENT == 'production':
+    # Cross-domain cookie settings
+    CSRF_COOKIE_SAMESITE = 'None'
+    SESSION_COOKIE_SAMESITE = 'None'
+    
+    # HTTPS/SSL
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+    # Secure cookies
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 ROOT_URLCONF = 'api_service.urls'
 
@@ -199,8 +210,8 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': True,
     'SET_PASSWORD_RETYPE': True,
     'PASSWORD_RESET_CONFIRM_RETYPE': True,
-    'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
-    'ACTIVATION_URL': 'activate/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
     'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
     'TOKEN_MODEL' : None,
