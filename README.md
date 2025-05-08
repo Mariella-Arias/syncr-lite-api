@@ -132,7 +132,7 @@ Endpoints for scheduling and tracking workout activity.
 
    ```bash
    git clone <repository-url>
-   cd workout-tracker-api
+   cd syncr-lite-api
    ```
 
 2. Set up secret files:
