@@ -62,6 +62,7 @@ class CustomTokenRefreshView(TokenRefreshView):
         except Exception as e:
             return Response({"detail":str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         
+
 class CustomTokenBlacklistView(TokenBlacklistView):
     def post(self, request):
         refresh = request.COOKIES.get("refresh")
@@ -74,15 +75,15 @@ class CustomTokenBlacklistView(TokenBlacklistView):
             refresh_token = RefreshToken(refresh)
             refresh_token.blacklist()
 
-            if access:
-                response = Response({"details": "Logged out successfully."})
-                response.delete_cookie("access")
-                response.delete_cookie("refresh")
+            secure_cookie = settings.ENVIRONMENT == 'production'
+            samesite = 'None' if settings.ENVIRONMENT == 'production' else 'Lax'
 
-                return response
-            
             response = Response({"details": "Logged out successfully."})
-            response.delete_cookie("refresh")
+
+            if access:
+                response.delete_cookie("access", httponly=True, secure=secure_cookie, samesite=samesite)
+
+            response.delete_cookie("refresh",  httponly=True, secure=secure_cookie, samesite=samesite)
 
             return response
 
