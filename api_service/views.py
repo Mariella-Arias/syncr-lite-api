@@ -8,6 +8,7 @@ from rest_framework import status
 from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from datetime import datetime, timedelta
 
 
 User = get_user_model()
@@ -62,7 +63,6 @@ class CustomTokenRefreshView(TokenRefreshView):
         except Exception as e:
             return Response({"detail":str(e)}, status=status.HTTP_401_UNAUTHORIZED)
         
-
 class CustomTokenBlacklistView(TokenBlacklistView):
     def post(self, request):
         refresh = request.COOKIES.get("refresh")
@@ -75,18 +75,36 @@ class CustomTokenBlacklistView(TokenBlacklistView):
             refresh_token = RefreshToken(refresh)
             refresh_token.blacklist()
 
-            secure_cookie = settings.ENVIRONMENT == 'production'
-            samesite = 'None' if settings.ENVIRONMENT == 'production' else 'Lax'
-
             response = Response({"details": "Logged out successfully."})
 
-            if access:
-                response.delete_cookie("access", httponly=True, secure=secure_cookie, samesite=samesite)
+            if settings.ENVIRONMENT == 'production':
+                past_date = datetime.now() - timedelta(seconds=1)
+                
+                if access:
+                    response.set_cookie(
+                        "access", 
+                        "", 
+                        expires=past_date,
+                        httponly=True,
+                        secure=True,
+                        samesite='None'
+                    )
 
-            response.delete_cookie("refresh",  httponly=True, secure=secure_cookie, samesite=samesite)
+                response.set_cookie(
+                    "refresh",
+                    "",
+                    expires=past_date,
+                    httponly=True,
+                    secure=True,
+                    samesite='None'
+                )
+            else:
+                if access:
+                    response.delete_cookie("access")
+                response.delete_cookie("refresh")
 
             return response
 
-        except:
-            return Response({"detail" : "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-   
+        except Exception as e:
+            print(f"Logout error: {str(e)}")
+            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
