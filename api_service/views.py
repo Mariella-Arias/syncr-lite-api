@@ -26,9 +26,12 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             secure_cookie = settings.ENVIRONMENT == 'production'
             samesite = 'None' if settings.ENVIRONMENT == 'production' else 'Lax'
 
+            access_expires = datetime.now() + timedelta(minutes=5)
+            refresh_expires = datetime.now() + timedelta(days=1)
+
             # Set access and refresh cookies
-            response.set_cookie('access', access_token, httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(minutes=5))
-            response.set_cookie('refresh', refresh_token, httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(days=1))
+            response.set_cookie('access', access_token, httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(minutes=5), expires=access_expires)
+            response.set_cookie('refresh', refresh_token, httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(days=1), expires=refresh_expires)
             response.data = {}
             
             return response
@@ -56,9 +59,11 @@ class CustomTokenRefreshView(TokenRefreshView):
 
             secure_cookie = settings.ENVIRONMENT == 'production'
             samesite = 'None' if settings.ENVIRONMENT == 'production' else 'Lax'
+            access_expires = datetime.now() + timedelta(minutes=5)
+            refresh_expires = datetime.now() + timedelta(days=1)
     
-            response.set_cookie("refresh", str(new_refresh),  httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(days=1))
-            response.set_cookie("access", str(new_access),  httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(minutes=5))
+            response.set_cookie("access", str(new_access),  httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(minutes=5), expires=access_expires)
+            response.set_cookie("refresh", str(new_refresh),  httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(days=1), expires=refresh_expires)
 
             return response
     
