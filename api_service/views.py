@@ -25,11 +25,10 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
             secure_cookie = settings.ENVIRONMENT == 'production'
             samesite = 'None' if settings.ENVIRONMENT == 'production' else 'Lax'
-            domain = '.onrender.com' if settings.ENVIRONMENT == 'production' else None
 
             # Set access and refresh cookies
-            response.set_cookie('access', access_token, httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(minutes=5), domain=domain)
-            response.set_cookie('refresh', refresh_token, httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(days=1), domain=domain)
+            response.set_cookie('access', access_token, httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(minutes=5))
+            response.set_cookie('refresh', refresh_token, httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(days=1))
             response.data = {}
             
             return response
@@ -57,10 +56,9 @@ class CustomTokenRefreshView(TokenRefreshView):
 
             secure_cookie = settings.ENVIRONMENT == 'production'
             samesite = 'None' if settings.ENVIRONMENT == 'production' else 'Lax'
-            domain = '.onrender.com' if settings.ENVIRONMENT == 'production' else None
     
-            response.set_cookie("refresh", str(new_refresh),  httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(days=1), domain=domain)
-            response.set_cookie("access", str(new_access),  httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(minutes=5), domain=domain)
+            response.set_cookie("refresh", str(new_refresh),  httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(days=1))
+            response.set_cookie("access", str(new_access),  httponly=True, secure=secure_cookie, samesite=samesite, max_age=timedelta(minutes=5))
 
             return response
     
