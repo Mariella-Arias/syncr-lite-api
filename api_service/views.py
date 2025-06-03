@@ -9,6 +9,8 @@ from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from datetime import datetime, timedelta
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 
 User = get_user_model()
@@ -107,3 +109,57 @@ class CustomTokenBlacklistView(TokenBlacklistView):
 
         except Exception as e:
             return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+
+class CustomUserDeleteView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def delete(self, request):
+        refresh_cookie = request.COOKIES.get("refresh")
+        access_cookie = request.COOKIES.get("access")
+        
+        # Blacklist refresh token if it exists
+        if refresh_cookie:
+            try:
+                refresh_token = RefreshToken(refresh_cookie)
+                refresh_token.blacklist()
+            except Exception:
+                # Continue with deletion if token is already blacklisted
+                pass
+        
+        # Delete the user
+        user = request.user
+        user.delete()
+        
+        response = Response(status=status.HTTP_204_NO_CONTENT)
+        
+        # Clear cookies
+        if settings.ENVIRONMENT == 'production':
+            past_date = datetime.now() - timedelta(seconds=1)
+            
+            if access_cookie:
+                response.set_cookie(
+                    "access", 
+                    "", 
+                    expires=past_date,
+                    httponly=True,
+                    secure=True,
+                    samesite='None'
+                )
+
+            if refresh_cookie:
+                response.set_cookie(
+                    "refresh",
+                    "",
+                    expires=past_date,
+                    httponly=True,
+                    secure=True,
+                    samesite='None'
+                )
+        else:
+            if access_cookie:
+                response.delete_cookie("access")
+            if refresh_cookie:
+                response.delete_cookie("refresh")
+        
+        return response

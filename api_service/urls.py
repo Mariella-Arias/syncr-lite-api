@@ -16,13 +16,21 @@ Including another URLconf
 """
 from django.urls import path, include
 
-from .views import CustomTokenObtainPairView, CustomTokenRefreshView, CustomTokenBlacklistView
+from .views import CustomTokenObtainPairView, CustomTokenRefreshView, CustomTokenBlacklistView, CustomUserDeleteView
 
 urlpatterns = [
+    # Token endpoints
     path('api/token/blacklist/', CustomTokenBlacklistView.as_view()),
     path('token/refresh/', CustomTokenRefreshView.as_view()),
     path('token/', CustomTokenObtainPairView.as_view()),
+
+    # User delete endpoint
+    path('auth/users/delete/', CustomUserDeleteView.as_view()),
+
+    # Djoser endpoints
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
+
+    # Workout app URLs
     path('workouts/', include('workouts.urls'))
 ]
